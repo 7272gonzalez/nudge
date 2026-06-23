@@ -20,21 +20,10 @@ try {
   if (found) nodePath = found
 } catch {}
 
+const startScript = path.join(HERE, 'scripts', 'start-nudge.sh')
 const script = `-- Nudge Launcher
--- Starts the Nudge focus server (if not already running) and opens the app.
-
-set nudgeDir to "${HERE}"
-set nodePath to "${nodePath}"
-set nudgePort to "3456"
-
-try
-  do shell script "lsof -ti:" & nudgePort
-on error
-  do shell script "cd " & quoted form of nudgeDir & " && nohup " & nodePath & " server.js > /tmp/nudge.log 2>&1 &"
-  delay 1.5
-end try
-
-open location "http://localhost:" & nudgePort
+-- Delegates all start logic to a shell script so do shell script doesn't hang.
+do shell script "bash ${startScript}"
 `
 
 const tmpScript = '/tmp/nudge-launcher.applescript'
