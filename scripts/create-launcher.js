@@ -25,16 +25,16 @@ const script = `-- Nudge Launcher
 
 set nudgeDir to "${HERE}"
 set nodePath to "${nodePath}"
-set port to "3456"
+set nudgePort to "3456"
 
 try
-  do shell script "lsof -ti:" & port
+  do shell script "lsof -ti:" & nudgePort
 on error
   do shell script "cd " & quoted form of nudgeDir & " && nohup " & nodePath & " server.js > /tmp/nudge.log 2>&1 &"
   delay 1.5
 end try
 
-open location "http://localhost:" & port
+open location "http://localhost:" & nudgePort
 `
 
 const tmpScript = '/tmp/nudge-launcher.applescript'
