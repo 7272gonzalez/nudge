@@ -362,7 +362,8 @@ setInterval(() => {
     state.lastBlockStart = blockStart
     if (blockStart !== null && state.mode === 'working') {
       // A new focus block just started — play a gentle chime and notify.
-      notify('Nudge 🦔', `New block: ${block.title}`, { sound: 'Blow' })
+      notify('Nudge 🦔', `New block: ${block.title}`)
+      exec('afplay /System/Library/Sounds/Hero.aiff && afplay /System/Library/Sounds/Hero.aiff && afplay /System/Library/Sounds/Hero.aiff', () => {})
     }
   }
   pushStatus()
