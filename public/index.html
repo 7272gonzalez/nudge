@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nudge 🦔</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%A6%94</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="mascot" id="mascot">🦔</div>
+    <div class="clock" id="clock">—</div>
+
+    <!-- START -->
+    <section id="view-start" class="card">
+      <div class="focus-title">Hi, I'm Nudge!</div>
+      <div class="focus-sub">Your cheerful focus friend. Ready to start the day together?</div>
+      <div class="btns" style="margin-top:18px;">
+        <button class="btn-go btn-big" id="btn-start">Let's go ☀️</button>
+      </div>
+    </section>
+
+    <!-- NOW / FOCUS -->
+    <section id="view-now" class="card hidden">
+      <div class="lead" id="now-lead">Right now</div>
+      <div class="focus-title" id="now-title">—</div>
+      <div class="focus-sub" id="now-sub"></div>
+      <div class="btns" style="margin-top:20px;">
+        <button class="btn-done" id="btn-done">✅ Done!</button>
+        <button class="btn-switch" id="btn-switch">🔀 Switch task</button>
+        <button class="btn-break" id="btn-break">🍵 Break</button>
+        <button class="btn-stuck" id="btn-stuck">🧩 I'm stuck</button>
+      </div>
+      <div class="pace" id="pace"></div>
+    </section>
+
+    <!-- CHECK-IN -->
+    <section id="view-checkin" class="card checkin-card hidden">
+      <div class="lead" id="checkin-lead">Still on</div>
+      <div class="focus-title" id="checkin-focus">—</div>
+      <div class="bubble" id="checkin-text">Still rolling?</div>
+      <div class="btns">
+        <button class="btn-go" id="btn-onit">Yep, on it 💪</button>
+        <button class="btn-switch" id="btn-checkin-switch">Switched 🔀</button>
+        <button class="btn-break" id="btn-checkin-break">Break 🍵</button>
+        <button class="btn-stuck" id="btn-checkin-stuck">Stuck 🧩</button>
+      </div>
+    </section>
+
+    <!-- MEETING -->
+    <section id="view-meeting" class="card meeting-card hidden">
+      <div class="bubble" id="meeting-text">Meeting soon 💙</div>
+      <div class="focus-sub" id="meeting-sub"></div>
+    </section>
+
+    <!-- BREAK -->
+    <section id="view-break" class="card break-card hidden">
+      <div class="bubble" id="break-text">Break time 🍵</div>
+      <div class="btns">
+        <button class="btn-go" id="btn-back">I'm back! 🌟</button>
+      </div>
+      <div class="focus-sub" id="break-timer" style="margin-top:10px;"></div>
+    </section>
+
+    <!-- BREAK PICKER (when starting a break) -->
+    <section id="view-breakpick" class="card hidden">
+      <div class="bubble">How long a break? 🍵</div>
+      <div class="btns">
+        <button class="btn-break" data-min="15">15 min</button>
+        <button class="btn-break" data-min="30">30 min</button>
+        <button class="btn-ghost" data-min="0">I'll tell you</button>
+      </div>
+    </section>
+
+    <!-- TASK LIST (switch / next) -->
+    <section id="view-list" class="card hidden">
+      <div class="bubble" id="list-title">Pick your next adventure ✨</div>
+      <div class="list" id="list-items"></div>
+      <div class="btns" style="margin-top:6px;">
+        <button class="btn-ghost" id="btn-list-back">← never mind</button>
+      </div>
+    </section>
+
+    <!-- DONE CONFIRM -->
+    <section id="view-doneconfirm" class="card hidden">
+      <div class="bubble" id="doneconfirm-title">Which one did you finish? 🎉</div>
+      <div class="list" id="done-items"></div>
+      <div class="btns" style="margin-top:6px;">
+        <button class="btn-ghost" id="btn-done-cancel">← never mind</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="quit-bar">
+    <button class="btn-quit" id="btn-quit">Quit Nudge</button>
+  </div>
+  <script src="nudge.js"></script>
+</body>
+</html>

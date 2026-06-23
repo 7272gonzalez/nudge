@@ -1,0 +1,189 @@
+:root {
+  --peach: #ffd6a5;
+  --sky: #a0d8ef;
+  --mint: #b8f2d8;
+  --sun: #ffe066;
+  --ink: #3a3a4a;
+  --soft: #6b6b7d;
+  --card: rgba(255, 255, 255, 0.78);
+  --shadow: 0 10px 30px rgba(120, 110, 160, 0.18);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff4e6 0%, #e6f7ff 45%, #eafff3 100%);
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+}
+
+.mascot {
+  font-size: 72px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.08));
+  transition: transform 0.3s ease;
+}
+.mascot.wiggle { animation: wiggle 0.6s ease; }
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-8deg) scale(1.05); }
+  75% { transform: rotate(8deg) scale(1.05); }
+}
+
+.clock {
+  font-size: 15px;
+  color: var(--soft);
+  margin: 8px 0 18px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.card {
+  background: var(--card);
+  backdrop-filter: blur(8px);
+  border-radius: 28px;
+  padding: 30px 26px;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+
+.lead {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.focus-title {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+.focus-sub { font-size: 15px; color: var(--soft); }
+
+.bubble {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+  min-height: 26px;
+  margin: 4px 0 6px;
+}
+
+.btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+button {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  border: none;
+  border-radius: 18px;
+  padding: 14px 22px;
+  cursor: pointer;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 4px 0 rgba(120, 110, 160, 0.18);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(120, 110, 160, 0.18); }
+button:hover { filter: brightness(1.03); }
+
+.btn-go { background: var(--mint); }
+.btn-done { background: var(--sun); }
+.btn-switch { background: var(--sky); }
+.btn-break { background: var(--peach); }
+.btn-stuck { background: #ffc9de; }
+.btn-big { font-size: 20px; padding: 18px 30px; }
+.btn-ghost { background: #fff; color: var(--soft); }
+
+.hidden { display: none !important; }
+
+.checkin-card { border: 3px solid var(--mint); }
+.checkin-card.firm {
+  border-color: #ff8fab;
+  animation: pop 0.4s ease;
+  box-shadow: 0 0 0 6px rgba(255, 143, 171, 0.25), var(--shadow);
+}
+@keyframes pop {
+  0% { transform: scale(0.96); }
+  60% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.list { text-align: left; margin-top: 4px; }
+.list-item {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(120, 110, 160, 0.12);
+  transition: transform 0.08s ease;
+}
+.list-item:hover { transform: translateY(-2px); }
+.list-item small { display: block; font-weight: 600; color: var(--soft); margin-top: 3px; }
+
+.meeting-card { background: rgba(160, 216, 239, 0.45); }
+.break-card { background: rgba(184, 242, 216, 0.5); }
+
+.toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 16px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.toast.show { opacity: 0.95; }
+
+.quit-bar {
+  margin-top: 18px;
+  text-align: center;
+}
+.btn-quit {
+  background: none;
+  border: none;
+  color: var(--soft);
+  font-family: inherit;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: opacity 0.15s;
+}
+.btn-quit:hover { opacity: 1; }
+
+.pace {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--soft);
+  font-weight: 700;
+}
