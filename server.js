@@ -41,7 +41,9 @@ const state = {
   // suggestion until the clock moves into the next schedule block.
   // { title, line, anchorStart } — anchorStart is the start-minute of the
   // block that was current when you switched (null if you were between blocks).
-  override: null
+  override: null,
+  // Tracks the start-minute of the last seen block so we can detect transitions.
+  lastBlockStart: null
 }
 let checkinTimer = null
 let renudgeTimer = null
@@ -350,8 +352,21 @@ function watchFile (path) {
   } catch { /* file may not exist yet; ignore */ }
 }
 
-// Tick every 30s so the clock/current-block and meeting cards stay fresh.
-setInterval(() => { if (state.started) pushStatus() }, 30 * 1000)
+// Tick every 30s — refresh the UI and detect block transitions for the chime.
+setInterval(() => {
+  if (!state.started) return
+  const min = nowMinutes()
+  const block = currentBlock(state.schedule, min)
+  const blockStart = block ? block.start : null
+  if (blockStart !== state.lastBlockStart) {
+    state.lastBlockStart = blockStart
+    if (blockStart !== null && state.mode === 'working') {
+      // A new focus block just started — play a gentle chime and notify.
+      notify('Nudge 🦔', `New block: ${block.title}`, { sound: 'Blow' })
+    }
+  }
+  pushStatus()
+}, 30 * 1000)
 
 // Midnight reset — return to the start screen so each day begins fresh.
 function scheduleMidnightReset () {
