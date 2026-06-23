@@ -22,8 +22,10 @@ try {
 
 const startScript = path.join(HERE, 'scripts', 'start-nudge.sh')
 const script = `-- Nudge Launcher
--- Delegates all start logic to a shell script so do shell script doesn't hang.
-do shell script "bash ${startScript}"
+-- Shell script starts the server; AppleScript opens the browser via open location
+-- (the correct way to open URLs on macOS without triggering permission prompts).
+do shell script "bash ${JSON.stringify(startScript).slice(1, -1)}"
+open location "http://localhost:3456"
 `
 
 const tmpScript = '/tmp/nudge-launcher.applescript'

@@ -16,5 +16,3 @@ if ! lsof -ti:$PORT > /dev/null 2>&1; then
     lsof -ti:$PORT > /dev/null 2>&1 && break
   done
 fi
-
-open "http://localhost:$PORT"
