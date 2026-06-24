@@ -78,8 +78,14 @@ function render (s, force = false) {
     $('now-sub').textContent = chosen
       ? (s.next ? `Plan picks back up at ${s.next.label.split('–')[0].trim()}.` : '')
       : (s.focus.sub || '')
+  } else if (s.next) {
+    // Gap between scheduled blocks — next block is coming.
+    const nextTime = s.next.label.split('–')[0].trim()
+    $('now-lead').textContent = 'Free until'
+    $('now-title').textContent = nextTime
+    $('now-sub').textContent = `${s.next.title} is up next — use this time as you like.`
   } else {
-    // Past the scheduled day — surface the next task.
+    // Genuinely past the scheduled day — surface the next open task.
     api('/api/next').then(d => {
       $('now-lead').textContent = 'Next up'
       $('now-title').textContent = d.next ? d.next.title : "You're all caught up! 🎉"
