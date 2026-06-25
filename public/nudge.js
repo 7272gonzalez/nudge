@@ -48,7 +48,9 @@ function render (s, force = false) {
     } else {
       $('break-timer').textContent = ''
     }
-    if (!transient) show('break')
+    // Always show break/meeting — these are time-sensitive and must not be
+    // blocked by the transient guard (which protects task pickers only).
+    show('break')
     return
   }
 
@@ -62,7 +64,7 @@ function render (s, force = false) {
       $('meeting-text').textContent = `Just out of ${mtg.title} — easing back in 💙`
     }
     $('meeting-sub').textContent = mtg.sub || ''
-    if (!transient) show('meeting')
+    show('meeting')
     return
   }
 
@@ -126,7 +128,7 @@ const openBreakPicker = () => show('breakpick')
 $('btn-break').onclick = openBreakPicker
 $('btn-checkin-break').onclick = openBreakPicker
 document.querySelectorAll('#view-breakpick button').forEach(b => {
-  b.onclick = async () => { await post('/api/break', { minutes: Number(b.dataset.min) }) }
+  b.onclick = async () => { const s = await post('/api/break', { minutes: Number(b.dataset.min) }); render(s, true) }
 })
 $('btn-back').onclick = async () => { await post('/api/back') }
 
