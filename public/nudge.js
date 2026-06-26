@@ -68,12 +68,21 @@ function render (s, force = false) {
     return
   }
 
+  // Toggle between task buttons (focus) and "pick something" button (free gap).
+  function setFreeMode (free) {
+    $('btn-done').style.display = free ? 'none' : ''
+    $('btn-switch').style.display = free ? 'none' : ''
+    $('btn-stuck').style.display = free ? 'none' : ''
+    $('btn-free-work').style.display = free ? '' : 'none'
+  }
+
   // Normal focus view.
   if (s.scheduleError) {
     $('now-lead').textContent = 'Heads up'
     $('now-title').textContent = "I couldn't find today's briefing"
     $('now-sub').textContent = 'Generate your daily briefing, then I\'ll know the plan!'
   } else if (s.focus && s.focus.title) {
+    setFreeMode(false)
     const chosen = s.focus.source === 'switch'
     $('now-lead').textContent = chosen ? 'You chose this ✨' : 'Right now'
     $('now-title').textContent = s.focus.title
@@ -86,6 +95,7 @@ function render (s, force = false) {
     $('now-lead').textContent = 'Free until'
     $('now-title').textContent = nextTime
     $('now-sub').textContent = `${s.next.title} is up next — use this time as you like.`
+    setFreeMode(true)
   } else {
     // Genuinely past the scheduled day — surface the next open task.
     api('/api/next').then(d => {
@@ -189,6 +199,14 @@ const goStuck = async () => {
 }
 $('btn-stuck').onclick = goStuck
 $('btn-checkin-stuck').onclick = goStuck
+
+// Free block — open task picker so you can pick something to work on
+$('btn-free-work').onclick = async () => {
+  const { tasks } = await api('/api/tasks')
+  $('list-title').textContent = 'What would you like to work on? ✨'
+  renderList($('list-items'), tasks, false)
+  show('list')
+}
 
 // Skip meeting — go back to work immediately
 $('btn-skip-meeting').onclick = async () => {
