@@ -121,10 +121,13 @@ function resolveFocus (min) {
   const activeBlock = (skipActive && block && block.type === 'meeting') ? null : block
   const blockStart = activeBlock ? activeBlock.start : null
   if (state.override) {
-    if (state.override.anchorStart === blockStart) {
+    // Keep the override when there's no current block (gap or end of day) OR
+    // when we're still in the same block it was set in. Only expire when the
+    // clock moves into a *new* scheduled block — that's the natural handoff.
+    if (activeBlock === null || state.override.anchorStart === blockStart) {
       return { title: state.override.title, sub: '', source: 'switch', block: activeBlock }
     }
-    state.override = null // moved into a new block — back to the plan
+    state.override = null // new scheduled block started — back to the plan
   }
   if (activeBlock) return { title: activeBlock.title, sub: activeBlock.sub, source: 'schedule', block: activeBlock }
   return { title: null, sub: '', source: 'none', block: null }
