@@ -190,6 +190,21 @@ const goStuck = async () => {
 $('btn-stuck').onclick = goStuck
 $('btn-checkin-stuck').onclick = goStuck
 
+// Skip meeting — go back to work immediately
+$('btn-skip-meeting').onclick = async () => {
+  const s = await post('/api/skip-meeting')
+  if (s.focus && s.focus.title) {
+    // There's a scheduled work block — show it directly.
+    render(s, true)
+  } else {
+    // No scheduled block right now — let them pick what to work on.
+    const { tasks } = await api('/api/tasks')
+    $('list-title').textContent = 'What would you like to work on? ✨'
+    renderList($('list-items'), tasks, false)
+    show('list')
+  }
+}
+
 // Quit
 $('btn-quit').onclick = async () => {
   if (!confirm('Shut down Nudge?')) return

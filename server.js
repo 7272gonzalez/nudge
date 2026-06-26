@@ -43,7 +43,10 @@ const state = {
   // block that was current when you switched (null if you were between blocks).
   override: null,
   // Tracks the start-minute of the last seen block so we can detect transitions.
-  lastBlockStart: null
+  lastBlockStart: null,
+  // When set (minutes-since-midnight), the meeting buffer is suppressed until
+  // this time — used when the user skips a meeting to get back to work.
+  skippedMeetingEnd: null
 }
 let checkinTimer = null
 let renudgeTimer = null
@@ -113,14 +116,17 @@ async function refreshSchedule () {
 // as a side effect, so any caller (check-in, snapshot, tick) stays consistent.
 function resolveFocus (min) {
   const block = currentBlock(state.schedule, min)
-  const blockStart = block ? block.start : null
+  // If the user skipped a meeting, treat that block as absent until it ends.
+  const skipActive = state.skippedMeetingEnd !== null && min < state.skippedMeetingEnd
+  const activeBlock = (skipActive && block && block.type === 'meeting') ? null : block
+  const blockStart = activeBlock ? activeBlock.start : null
   if (state.override) {
     if (state.override.anchorStart === blockStart) {
-      return { title: state.override.title, sub: '', source: 'switch', block }
+      return { title: state.override.title, sub: '', source: 'switch', block: activeBlock }
     }
     state.override = null // moved into a new block — back to the plan
   }
-  if (block) return { title: block.title, sub: block.sub, source: 'schedule', block }
+  if (activeBlock) return { title: activeBlock.title, sub: activeBlock.sub, source: 'schedule', block: activeBlock }
   return { title: null, sub: '', source: 'none', block: null }
 }
 
@@ -129,7 +135,8 @@ function snapshot () {
   const min = nowMinutes()
   const focus = resolveFocus(min)
   const next = nextBlock(state.schedule, min)
-  const buffer = meetingBuffer(state.schedule, min, MEETING_BUFFER_MIN)
+  const skipActive = state.skippedMeetingEnd !== null && min < state.skippedMeetingEnd
+  const buffer = skipActive ? null : meetingBuffer(state.schedule, min, MEETING_BUFFER_MIN)
   return {
     mode: state.mode,
     started: state.started,
@@ -332,6 +339,22 @@ app.post('/api/stuck', (req, res) => {
   res.json({ ok: true, prompt })
 })
 
+// Skip meeting — suppress the meeting buffer and return to working mode.
+// The client uses the snapshot to decide whether to show the next work block
+// or open the task picker (when there's no upcoming scheduled focus block).
+app.post('/api/skip-meeting', (req, res) => {
+  const min = nowMinutes()
+  const buffer = meetingBuffer(state.schedule, min, MEETING_BUFFER_MIN)
+  if (buffer) {
+    // Suppress until the meeting ends plus the post-meeting buffer.
+    state.skippedMeetingEnd = buffer.meeting.end + MEETING_BUFFER_MIN
+  }
+  acknowledge()
+  broadcast('message', { text: "Back to it! 💪 What do you want to tackle?", kind: 'skip' })
+  pushStatus()
+  res.json(snapshot())
+})
+
 // Quit — graceful shutdown so the browser shows a clean message.
 app.post('/api/quit', (req, res) => {
   res.json({ ok: true })
@@ -381,6 +404,7 @@ function scheduleMidnightReset () {
     state.awaitingReply = false
     state.breakUntil = null
     state.override = null
+    state.skippedMeetingEnd = null
     clearTimers()
     clearTimeout(breakTimer); breakTimer = null
     pushStatus()
