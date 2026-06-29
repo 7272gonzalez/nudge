@@ -65,11 +65,19 @@ function htmlToLines (html) {
 // Slice the document down to the schedule section so we don't pick up the
 // calendar/events list (which also contains time ranges).
 function scheduleRegion (html) {
+  // Prefer an <h> tag containing "schedul" (most explicit).
   const headings = [...html.matchAll(/<h[1-6][^>]*>([^<]*schedul[^<]*)<\/h[1-6]>/gi)]
   if (headings.length) {
-    const last = headings[headings.length - 1]
-    return html.slice(last.index)
+    return html.slice(headings[headings.length - 1].index)
   }
+  // Current briefing format: <div class="card-title">🗓 Suggested Schedule …
+  // Find the LAST element whose visible text contains "schedul" — last because
+  // early JSON/meta blocks may also mention "schedule" before the real section.
+  const textMatches = [...html.matchAll(/<[^/!][^>]*>([^<]*schedul)/gi)]
+  if (textMatches.length) {
+    return html.slice(textMatches[textMatches.length - 1].index)
+  }
+  // Class-name fallback.
   const itemIdx = html.search(/class="[^"]*schedul/i)
   if (itemIdx !== -1) return html.slice(itemIdx)
   return html // last resort: whole doc
