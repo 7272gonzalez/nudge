@@ -83,10 +83,15 @@ function scheduleRegion (html) {
   return html // last resort: whole doc
 }
 
-function classify (text) {
-  const t = text.toLowerCase()
-  if (/\b(meeting|google meet|zoom|stand-?up|sync|catch-?up|1:1|call)\b/.test(t) ||
-      /☎|📞/u.test(text)) {
+// titleAndTags: title + tag chips (no sub-text — avoids false positives like
+//   "finish before morning meeting"). sub: attendee/location line only, used
+//   to catch video-call links that reliably indicate a meeting.
+function classify (titleAndTags, sub = '') {
+  const t = titleAndTags.toLowerCase()
+  const s = sub.toLowerCase()
+  if (/\b(meeting|google meet|zoom|teams|stand-?up|sync|catch-?up|1:1|call|webinar)\b/.test(t) ||
+      /☎|📞/u.test(titleAndTags) ||
+      /google meet|zoom\.us|teams\.microsoft|webex/.test(s)) {
     return 'meeting'
   }
   if (/^(break|lunch|break\s*\/\s*lunch|coffee)/.test(t) || /\bbreak\b/.test(t)) {
@@ -140,15 +145,19 @@ export function parseScheduleHtml (html) {
     const tags = fields.slice(1)
     if (!title) continue
 
-    // Sub-line: the next non-blank line that isn't a time/label.
+    // Collect all sub-lines until the next time block (description + attendees).
+    // The first line becomes the display sub; all lines feed into classification
+    // so attendee info like "With: … · Google Meet" can mark a block as a meeting.
     let sub = ''
+    const subLines = []
     for (let k = j + 1; k < lines.length; k++) {
       const cand = lines[k]
       if (!cand) continue
       if (TIME_RANGE.test(cand) || SECTION_LABELS.test(cand)) break
-      sub = cand.split(SEP).map(f => f.trim()).filter(Boolean).join(' ')
-      break
+      subLines.push(cand.split(SEP).map(f => f.trim()).filter(Boolean).join(' '))
     }
+    sub = subLines[0] || ''
+    const subAll = subLines.join(' ')
 
     const fmtTime = raw => raw.replace(/\s+/g, '').toLowerCase()
     blocks.push({
@@ -159,7 +168,7 @@ export function parseScheduleHtml (html) {
       sub,
       // Classify on the title + tag chips only — never the description, which
       // may merely mention a meeting (e.g. "finish before morning meeting").
-      type: classify(`${title} ${tags.join(' ')}`),
+      type: classify(`${title} ${tags.join(' ')}`, subAll),
       tags
     })
   }
