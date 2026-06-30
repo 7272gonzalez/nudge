@@ -30,6 +30,14 @@ blindness. Nudge is a friend, not a taskmaster.
 
 ---
 
+## New here? Start with the full setup guide
+
+**[docs/SETUP.md](docs/SETUP.md)** — step-by-step walkthrough covering the daily briefing Claude Project, Nudge installation, and the Desktop launcher. Covers everything from scratch in about 30 minutes.
+
+The briefing system prompt template is in **[docs/daily-briefing-prompt.md](docs/daily-briefing-prompt.md)**.
+
+---
+
 ## Quick start
 
 ### 1. Clone the repo
