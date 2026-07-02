@@ -304,8 +304,13 @@ app.get('/api/done/candidates', async (req, res) => {
 // Done — step 2: flip the confirmed line.
 app.post('/api/done', async (req, res) => {
   const line = Number(req.body?.line)
-  if (!Number.isInteger(line)) return res.status(400).json({ ok: false })
-  const result = await markDone(line)
+  if (!Number.isInteger(line)) return res.status(400).json({ ok: false, error: 'invalid-line' })
+  let result
+  try {
+    result = await markDone(line)
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: 'unexpected', detail: e.message })
+  }
   if (result.ok) {
     // If you finished the task you'd switched to, drop the override.
     if (state.override && state.override.line === line) state.override = null

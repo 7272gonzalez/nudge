@@ -165,8 +165,22 @@ function renderList (container, tasks, isDone) {
     el.innerHTML = t.title
     el.onclick = async () => {
       if (isDone) {
-        const r = await post('/api/done', { line: t.line })
-        if (r.ok) render(lastSnapshot, true)
+        let r
+        try {
+          r = await post('/api/done', { line: t.line })
+        } catch {
+          toast('Could not reach server — is Nudge still running? 😕')
+          return
+        }
+        if (r.ok) {
+          render(lastSnapshot, true)
+        } else {
+          const reason = r.error === 'line-gone' ? 'Task not found in TASKS.md — was the file edited?'
+            : r.error === 'write-failed' ? `Could not write to TASKS.md: ${r.detail || 'permission denied?'}`
+            : r.error === 'read-failed' ? 'Could not read TASKS.md — check the path in nudge.config.json'
+            : 'Could not mark task done 😕'
+          toast(reason)
+        }
       } else {
         // Adopt the chosen task as the active focus; the server makes it the
         // new "now" and resets the cadence. Render the snapshot it returns.

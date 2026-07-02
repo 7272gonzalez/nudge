@@ -83,7 +83,12 @@ function overlap (a, b) {
 // Flip exactly one line's checkbox to done. Re-reads first so we never clobber
 // edits made elsewhere; verifies the target line still looks right.
 export async function markDone (lineIndex) {
-  const raw = await readFile(TASKS_PATH, 'utf8')
+  let raw
+  try {
+    raw = await readFile(TASKS_PATH, 'utf8')
+  } catch (e) {
+    return { ok: false, error: 'read-failed', detail: e.message }
+  }
   const lines = raw.split('\n')
   const line = lines[lineIndex]
   if (line === undefined) return { ok: false, error: 'line-gone' }
@@ -92,7 +97,11 @@ export async function markDone (lineIndex) {
   if (m[2].toLowerCase() === 'x') return { ok: true, title: prettify(m[3]), already: true }
 
   lines[lineIndex] = line.replace(/-\s\[ \]/, '- [x]')
-  await writeFile(TASKS_PATH, lines.join('\n'), 'utf8')
+  try {
+    await writeFile(TASKS_PATH, lines.join('\n'), 'utf8')
+  } catch (e) {
+    return { ok: false, error: 'write-failed', detail: e.message }
+  }
   return { ok: true, title: prettify(m[3]) }
 }
 
