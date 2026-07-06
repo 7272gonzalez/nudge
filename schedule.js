@@ -196,10 +196,14 @@ export function nextBlock (blocks, minutes) {
 }
 
 // Are we within `buffer` minutes before or after any meeting block?
+// Two-pass so "during" always wins — a new meeting starting right after a
+// previous one is never hidden by the prior meeting's post-buffer.
 export function meetingBuffer (blocks, minutes, buffer = 10) {
-  for (const b of blocks) {
-    if (b.type !== 'meeting') continue
+  const meetings = blocks.filter(b => b.type === 'meeting')
+  for (const b of meetings) {
     if (minutes >= b.start && minutes < b.end) return { meeting: b, phase: 'during' }
+  }
+  for (const b of meetings) {
     if (minutes >= b.start - buffer && minutes < b.start) return { meeting: b, phase: 'before' }
     if (minutes >= b.end && minutes < b.end + buffer) return { meeting: b, phase: 'after' }
   }
