@@ -71,9 +71,9 @@ function scheduleRegion (html) {
     return html.slice(headings[headings.length - 1].index)
   }
   // Current briefing format: <div class="card-title">🗓 Suggested Schedule …
-  // Find the LAST element whose visible text contains "schedul" — last because
-  // early JSON/meta blocks may also mention "schedule" before the real section.
-  const textMatches = [...html.matchAll(/<[^/!][^>]*>([^<]*schedul)/gi)]
+  // Find the LAST element whose visible text contains "schedul" as a word start
+  // (so "reschedule" in a note doesn't steal the anchor).
+  const textMatches = [...html.matchAll(/<[^/!][^>]*>([^<]*\bschedul)/gi)]
   if (textMatches.length) {
     return html.slice(textMatches[textMatches.length - 1].index)
   }
@@ -89,7 +89,7 @@ function scheduleRegion (html) {
 function classify (titleAndTags, sub = '') {
   const t = titleAndTags.toLowerCase()
   const s = sub.toLowerCase()
-  if (/\b(meeting|google meet|zoom|teams|stand-?up|sync|catch-?up|1:1|call|webinar)\b/.test(t) ||
+  if (/\b(meeting|google meet|zoom|teams|stand-?up|sync|catch-?up|check-?in|1:1|call|webinar)\b/.test(t) ||
       /☎|📞/u.test(titleAndTags) ||
       /google meet|zoom\.us|teams\.microsoft|webex/.test(s)) {
     return 'meeting'
